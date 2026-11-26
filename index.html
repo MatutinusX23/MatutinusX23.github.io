@@ -5,6 +5,7 @@
   用照片代替左上角的印章头像：把 <div class="seal"> 那一行换成
   <img class="avatar" src="avatar.jpg" alt="你的名字" width="72" height="72">
   换强调色：改 styles.css 里的 --accent。
+  去掉全部动效：删除 styles.css 末尾「动效」一节，以及 <head> 里的脚本。
 -->
 <head>
   <meta charset="utf-8">
@@ -23,6 +24,32 @@
   <meta property="og:description" content="一句话介绍你在做的事：为谁解决什么问题。">
   <meta property="og:url" content="https://matutinusx23.github.io/">
 
+  <script>
+    // 动效开关：系统开启「减少动效」时不做任何动画；地址后加 ?motion=on 可强制开启，仅用于预览。
+    // 关闭 JavaScript 或浏览器过旧时，内容照常完整显示，只是没有动效。
+    (function () {
+      var root = document.documentElement;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var forced = /[?&]motion=on/.test(window.location.search);
+      if (!('IntersectionObserver' in window) || (reduceMotion && !forced)) return;
+
+      root.classList.add('motion');
+
+      // 滚动揭示：分区与页脚进入视口时再显示。
+      // 不设底部余量：否则一屏放得下、页面滚不动时，最底部的元素会一直不出现。
+      document.addEventListener('DOMContentLoaded', function () {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        });
+        document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+      });
+    })();
+  </script>
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b23a1a'/%3E%3Crect x='20' y='20' width='24' height='24' fill='none' stroke='%23fff' stroke-width='5'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -39,21 +66,26 @@
       <!-- 占位：头像，字换成你名字里的一个字或首字母 -->
       <div class="seal" aria-hidden="true">名</div>
 
-      <!-- 占位：姓名、公司或产品名、一句话介绍 -->
-      <h1>你的名字</h1>
-      <p class="role">「公司或产品名」创始人</p>
-      <p class="tagline">一句话介绍你在做的事：为谁解决什么问题。</p>
+      <!-- 占位：姓名。逐字升起的效果要求每个字一个 .char，--i 从 0 依次加 1；aria-label 写完整姓名。
+           英文姓名可以每个单词一个 .char。 -->
+      <h1 aria-label="你的名字"><span class="name" aria-hidden="true"><span class="char" style="--i: 0">你</span><span class="char" style="--i: 1">的</span><span class="char" style="--i: 2">名</span><span class="char" style="--i: 3">字</span></span></h1>
 
-      <ul class="links">
-        <!-- 占位：邮箱，改 data-user 和 @ 前后两段，不要直接写成完整地址，避免被爬虫抓取 -->
-        <li><a class="email" data-user="you" data-domain="example.com">you [at] example.com</a></li>
-        <li><a href="https://github.com/MatutinusX23" rel="me">GitHub<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></li>
-        <!-- 更多链接照此添加，例如公司官网、LinkedIn：<li><a href="链接地址">名称</a></li> -->
-      </ul>
+      <div class="identity__meta">
+        <!-- 占位：公司或产品名、一句话介绍 -->
+        <p class="role">「公司或产品名」创始人</p>
+        <p class="tagline">一句话介绍你在做的事：为谁解决什么问题。</p>
+
+        <ul class="links">
+          <!-- 占位：邮箱，改 data-user 和 @ 前后两段，不要直接写成完整地址，避免被爬虫抓取 -->
+          <li><a class="email" data-user="you" data-domain="example.com">you [at] example.com</a></li>
+          <li><a href="https://github.com/MatutinusX23" rel="me">GitHub<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></li>
+          <!-- 更多链接照此添加，例如公司官网、LinkedIn：<li><a href="链接地址">名称</a></li> -->
+        </ul>
+      </div>
     </header>
 
     <main id="main" class="content" tabindex="-1">
-      <section class="section" aria-labelledby="now">
+      <section class="section reveal" aria-labelledby="now">
         <h2 id="now" class="section__title"><span class="num" aria-hidden="true">01</span>在做什么</h2>
         <div class="prose prose--lead">
           <!-- 占位：公司或产品名、一句话说明、当前进展 -->
@@ -62,7 +94,7 @@
         </div>
       </section>
 
-      <section class="section" aria-labelledby="why">
+      <section class="section reveal" aria-labelledby="why">
         <h2 id="why" class="section__title"><span class="num" aria-hidden="true">02</span>为什么是我</h2>
         <div class="prose">
           <!-- 占位：你和这件事的关系 -->
@@ -71,7 +103,7 @@
         </div>
       </section>
 
-      <section class="section" aria-labelledby="track">
+      <section class="section reveal" aria-labelledby="track">
         <h2 id="track" class="section__title"><span class="num" aria-hidden="true">03</span>做过什么</h2>
         <ol class="entries">
           <!-- 占位：每条经历写清角色和可验证的结果（数字、规模、影响），按时间倒序，三到四条即可。
@@ -97,7 +129,7 @@
         </ol>
       </section>
 
-      <section class="section" aria-labelledby="looking">
+      <section class="section reveal" aria-labelledby="looking">
         <h2 id="looking" class="section__title"><span class="num" aria-hidden="true">04</span>在找什么</h2>
         <div class="prose">
           <!-- 占位：融资阶段或合作方向。不面向投资人时，删除本节 -->
@@ -106,7 +138,7 @@
         </div>
       </section>
 
-      <section class="section" aria-labelledby="contact">
+      <section class="section reveal" aria-labelledby="contact">
         <h2 id="contact" class="section__title"><span class="num" aria-hidden="true">05</span>联系</h2>
         <div class="prose">
           <p>欢迎来信，也欢迎在 GitHub 上找到我。</p>
@@ -118,7 +150,7 @@
       </section>
     </main>
 
-    <footer class="footer">© <span id="year">2026</span> 你的名字</footer>
+    <footer class="footer reveal">© <span id="year">2026</span> 你的名字</footer>
   </div>
 
   <script>
