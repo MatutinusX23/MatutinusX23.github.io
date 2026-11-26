@@ -1,0 +1,351 @@
+/* ==========================================================================
+   个人简介页样式
+   改颜色只改下面的令牌；换强调色改 --accent（浅色、深色两处）。
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* 浅色主题。对比度（对背景）：正文 16.4:1，次要文字 6.5:1，强调色 5.6:1 */
+  --bg: #faf8f4;
+  --text: #1c1a17;
+  --muted: #62594e;
+  --accent: #b23a1a;
+  --on-accent: #ffffff;
+  --line: #e3ddd2;
+
+  /* 只用系统自带字体，不请求外部字体文件 */
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* 以 4 为基数的间距刻度 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --container: 68rem;
+  /* 正文行长上限：约 38 个汉字一行。用 rem 而不是 em，em 会随元素自身字号变化 */
+  --measure: 38rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 深色主题。对比度（对背景）：正文 14.9:1，次要文字 7.0:1，强调色 7.5:1 */
+    --bg: #161311;
+    --text: #ece6dc;
+    --muted: #a89e91;
+    --accent: #f08a62;
+    --on-accent: #161311;
+    --line: #2f2a24;
+  }
+}
+
+/* ---------- 基础 ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  scrollbar-color: var(--line) transparent;
+  caret-color: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- 链接与焦点 ---------- */
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+  touch-action: manipulation;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 键盘用户按 Tab 跳过页头直接进入正文 */
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--accent);
+  color: var(--on-accent);
+  text-decoration: none;
+  border-radius: var(--space-1);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+#main:focus {
+  outline: none;
+}
+
+/* 图标精灵只做定义，不占布局空间（外层 svg 上的 hidden 属性在浏览器里不生效） */
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 0.2em;
+  vertical-align: -0.05em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- 页面骨架：窄屏单栏，宽屏左侧身份区 + 右侧正文 ---------- */
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-4);
+}
+
+/* 单栏时正文与页脚同样受行长上限约束 */
+.content,
+.footer {
+  max-width: var(--measure);
+}
+
+@media (min-width: 56rem) {
+  .page {
+    grid-template-columns: 18rem minmax(0, 1fr);
+    column-gap: var(--space-16);
+    padding: var(--space-24) var(--space-8);
+  }
+
+  .content,
+  .footer {
+    max-width: none;
+  }
+
+  .identity {
+    position: sticky;
+    top: var(--space-12);
+    align-self: start;
+  }
+}
+
+/* ---------- 身份区 ---------- */
+
+.seal,
+.avatar {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: var(--space-6);
+}
+
+.seal {
+  display: grid;
+  place-items: center;
+  border-radius: var(--space-2);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.role {
+  margin-top: var(--space-2);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tagline {
+  margin-top: var(--space-3);
+  color: var(--muted);
+}
+
+.links {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.identity .links {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* ---------- 正文分区 ---------- */
+
+.section + .section {
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--line);
+}
+
+.section__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.section__title .num {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 正文行长上限：约 38 个汉字一行 */
+.prose {
+  max-width: var(--measure);
+}
+
+/* 首要信息（在做什么）比其余正文略大 */
+.prose--lead {
+  font-size: 1.125rem;
+}
+
+.prose--lead strong {
+  font-weight: 700;
+}
+
+.prose p + p,
+.prose ul {
+  margin-top: var(--space-4);
+}
+
+.skills {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.skill {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.skill dt {
+  color: var(--muted);
+}
+
+.entries {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.entry__meta {
+  margin-bottom: var(--space-1);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.entry__role {
+  margin-top: var(--space-1);
+  color: var(--muted);
+}
+
+.entry__desc {
+  margin-top: var(--space-3);
+}
+
+.footer {
+  grid-column: 1 / -1;
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+/* ---------- 动效偏好 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  a {
+    transition: none;
+  }
+}

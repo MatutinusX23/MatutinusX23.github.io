@@ -1,0 +1,7 @@
+# 本地工具目录，不属于站点
+.mimosa/
+.video_agent/
+.DS_Store
+
+# 样式参考页，只在本地看，不发布
+preview/
